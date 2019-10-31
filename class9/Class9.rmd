@@ -2,7 +2,7 @@
 title: "Class 9"
 author: "Belinda Xue"
 date: "10/29/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -423,10 +423,6 @@ text(npc[,1], npc[,2], c(1,2), col="white")
 ```
 
 Q17. Which of these new patients should we prioritize for follow up based on your results?
-
-```{r}
-proj(wisc.pr)
-```
 
 
 
