@@ -2,7 +2,7 @@
 title: "Class 8 Machine Learning 1"
 author: "Belinda Xue"
 date: "10/24/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
