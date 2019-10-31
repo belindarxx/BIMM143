@@ -1,4 +1,4 @@
-# LEC 5 Data Visualization (from ppt)
+
 
 #' ---
 #' title: "Class5 Data exploration and visualization in R"
@@ -6,6 +6,11 @@
 #' date: "Oct 31, 2019"
 #' output: github_document
 #' ---
+#' 
+
+
+
+# LEC 5 Data Visualization (from ppt)
 
 x <- rnorm(1000)
 # some summary stats about the normal distribution
