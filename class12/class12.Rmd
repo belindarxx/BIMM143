@@ -50,8 +50,19 @@ rmsd(ori,res)
 
 result.pdb ran in VMD, shows 14 frames--> meaning total 14 frames of docking and the first one is the lowest energy one (more preferred one)
 
+Section 3
+```{r}
+library(bio3d)
+pdb <- read.pdb("1HEL")
+modes <- nma(pdb)
+plot(modes, sse=pdb)
+```
 
 
+```{r}
+# visualize NMA results
+mktrj(modes,mode=7, file="nma_7.pdb")
+```
 
 
 

@@ -53,3 +53,30 @@ rmsd(ori,res)
 
 result.pdb ran in VMD, shows 14 frames–\> meaning total 14 frames of
 docking and the first one is the lowest energy one (more preferred one)
+
+Section 3
+
+``` r
+library(bio3d)
+pdb <- read.pdb("1HEL")
+```
+
+    ##   Note: Accessing on-line PDB file
+
+``` r
+modes <- nma(pdb)
+```
+
+    ##  Building Hessian...     Done in 0.025 seconds.
+    ##  Diagonalizing Hessian...    Done in 0.114 seconds.
+
+``` r
+plot(modes, sse=pdb)
+```
+
+![](class12_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+# visualize NMA results
+mktrj(modes,mode=7, file="nma_7.pdb")
+```
