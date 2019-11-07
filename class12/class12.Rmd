@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 WE weant to produce a protein-only PDB file and a drug only PFB file.
 
-
+Workbook LAB 12 1.1-1.2
 ```{r}
 library(bio3d)
 
@@ -23,9 +23,30 @@ get.pdb("1hsg")
 
 ```{r}
 pdb <- read.pdb("1hsg.pdb")
+protein <- atom.select(pdb, "protein", value=TRUE)
+write.pdb(protein,file="1hsg_protein.pdb")
 ```
 
 
+and for the ligand
+```{r}
+ligand <- atom.select(pdb,"ligand", value=TRUE)
+write.pdb(ligand, file="1hsg_ligand.pdb")
+# make sure we have no protein in the ligand
+```
+
+LAB 12 Section 2.3
+```{r}
+library(bio3d)
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
+```{r}
+# res <- read.pdb("all.pdbqt", multi=TRUE)
+ori <- read.pdb("ligand.pdbqt")
+rmsd(ori,res)
+```
 
 
 
