@@ -1,0 +1,42 @@
+---
+title: "Class 12: Structural Bioinformatics II"
+author: "Belinda Xue"
+date: "11/7/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prep for docking
+
+WE weant to produce a protein-only PDB file and a drug only PFB file.
+
+
+```{r}
+library(bio3d)
+
+# download the PDB file, will show on the right side bar
+get.pdb("1hsg")
+```
+
+```{r}
+pdb <- read.pdb("1hsg.pdb")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
