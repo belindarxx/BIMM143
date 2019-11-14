@@ -1,0 +1,284 @@
+---
+title: "Class 14: Transcriptomics and the analysis of RNA-Seq data "
+author: "Belinda Xue"
+date: "11/12/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Transcriptomics and the analysis of RNA-Seq data
+
+
+## DESeq2 setup
+
+We will use the DESeq2 package from bioconductor. To install this we ran **in the CONSOLE** - note eval=FALSE option!! (showing the code without running it!!! )
+
+```{r eval=FALSE}
+install.packages("BiocManager")
+BiocManager::install()
+
+# For this class, you'll also need DESeq2:
+BiocManager::install("DESeq2")
+```
+
+
+
+Background
+The data for this hands-on session comes from a published RNA-seq experiment where airway smooth muscle cells were treated with dexamethasone, a synthetic glucocorticoid steroid with anti-inflammatory effects (Himes et al. 2014).
+
+Glucocorticoids are used, for example, by people with asthma to reduce inflammation of the airways. The anti-inflammatory effects on airway smooth muscle (ASM) cells has been known for some time but the underlying molecular mechanisms are unclear.
+
+Himes et al. used RNA-seq to profile gene expression changes in four different ASM cell lines treated with dexamethasone glucocorticoid. They found a number of differentially expressed genes comparing dexamethasone-treated to control cells, but focus much of the discussion on a single gene called CRISPLD2. This gene encodes a secreted protein known to be involved in lung development, and SNPs in this gene in previous GWAS studies are associated with inhaled corticosteroid resistance and bronchodilator response in asthma patients. They confirmed the upregulated CRISPLD2 mRNA expression with qPCR and increased protein expression using Western blotting.
+
+In the experiment, four primary human ASM cell lines were treated with 1 micromolar dexamethasone for 18 hours. For each of the four cell lines, we have a treated and an untreated sample. They did their analysis using Tophat and Cufflinks similar to our work in the last hands-on session. For a more detailed description of their analysis see the PubMed entry 24926665 and for raw data see the GEO entry GSE52778.
+
+In this session we will read and explore the gene expression data from this experiment using base R functions and then perform a detailed analysis with the DESeq2 package from Bioconductor.
+
+
+1. Bioconductor and DESeq2 setup
+- copy and paste the following lines of code into your R console one at a time
+
+install.packages("BiocManager")
+BiocManager::install()
+
+# For this class, you'll also need DESeq2:
+BiocManager::install("DESeq2")
+
+
+## 2. Import countData and colData
+
+Input countData and colData (metadata)
+```{r}
+counts <- read.csv("airway_scaledcounts.csv",  stringsAsFactors = FALSE)
+
+metadata <- read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+
+Have a peak... read the first 6 rows of the counts and metadata 
+```{r}
+head(counts)
+```
+
+```{r}
+head(metadata)
+```
+
+
+How many genes do we have in this dataset?
+```{r}
+nrow(counts)
+```
+
+How many experiments do we have?
+```{r}
+ncol(counts)
+```
+
+```{r}
+nrow(metadata)
+```
+Why counts and metadata have different experiment? 
+
+
+
+
+
+You can also use the View() function to view the entire object. Notice something here. The sample IDs in the metadata sheet (SRR1039508, SRR1039509, etc.) exactly match the column names of the countdata, except for the first column, which contains the Ensembl gene ID. This is important, and we’ll get more strict about it later on.
+
+
+## 3. Toy differential gene expression
+
+Lets perform some exploratory differential gene expression analysis. Note: this analysis is for demonstration only. NEVER do differential expression analysis this way!
+
+Look at the metadata object again to see which samples are control and which are drug treated
+
+
+We want to know if there is a difference in expression values for control (non-drug) vs treated (i.e. drug added cell lines).
+
+First step is to find which experiments were the control experiments and then get the average values across all control experiments. Then we will do the same for drug treated. 
+
+```{r}
+control <- metadata[metadata[,"dex"]=="control",]
+control$id # see if it match the control column in metadata
+```
+
+Now calculate the mean values accross these control columns of **counts**
+共八个experiment, 38694个gene,找avg of control experiment (x4) for every 38694 个genes
+```{r}
+control.mean <- rowSums(counts[,control$id])/length(control$id)
+names(control.mean) <- counts$ensgene
+```
+
+
+Now to do the same thing for the drug treated. Start with the metadata, isolate the drug treated column, counts里的treated加一起除于多少个treated
+```{r}
+treated <- metadata[metadata[,"dex"]=="treated",]
+treated$id # see the id of the treated column in metadata
+```
+Calculate the treated.mean
+```{r}
+treated.mean <- rowSums(counts[,treated$id])/length(treated$id)
+treated.mean
+```
+
+
+
+We will combine our meancout data for baookkeeping purposes. 把两个mean弄在个表格
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+```
+
+Plot control vs treated! 
+```{r}
+plot(meancounts$control.mean, meancounts$treated.mean)
+```
+
+
+This will be better on a log scale. Can see way more data points and see the spread. 
+```{r}
+plot(meancounts$control.mean, meancounts$treated.mean, log="xy")
+```
+
+We can find candidate differentially expressed genes by looking for genes with a large change between control and dex-treated samples. We usually look at the log2 of the fold change, because this has better mathematical properties.
+
+Here we calculate log2foldchange, add it to our meancounts data.frame and inspect the results either with the head() or the View() function for example
+
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+# control.mean and treated.mean log2 function
+# negative = down regulation due to drug treated
+# ignore the 0 rows 
+```
+
+There are a couple of “weird” results. Namely, the NaN (“not a number”“) and -Inf (negative infinity) results.
+
+The NaN is returned when you divide by zero and try to take the log. The -Inf is returned when you try to take the log of zero. It turns out that there are a lot of genes with zero expression. Let’s filter our data to remove these genes. Again inspect your result (and the intermediate steps) to see if things make sense to you
+
+```{r}
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
+# figure out which column/row is zero
+to.rm <- unique(zero.vals[,1]) # which row have more 0 value
+# unique function --> taken out the unique value that is not zero, leave behind the 0
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+```
+
+A common threshold used for calling something differentially expressed is a log2(FoldChange) of greater than 2 or less than -2. Let’s filter the dataset both ways to see how many genes are up or down-regulated.
+
+
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+```
+
+```{r}
+sum(up.ind) # tell me how many is >2
+```
+
+```{r}
+head(mycounts[up.ind,])
+```
+
+
+
+
+For example,
+```{r}
+x <- data.frame(control=c(56,0), treated=c(26,0))
+x
+```
+Tell you which position has a 0
+```{r}
+which(x==0)
+```
+```{r}
+(x==0)
+```
+
+```{r}
+which(x==0)
+
+which(x==0, arr.ind=TRUE)
+```
+
+Q8. Examine your annotated results for those genes with a log2(FoldChange) of greater than 2 (or less than -2 if you prefer) with the View() function. What do you notice? Would you trust these results? Why or why not?
+
+
+
+
+## 5. DESeq2 analysis
+
+Let’s do this the right way. DESeq2 is an R package for analyzing count-based NGS data like RNA-seq. It is available from Bioconductor. Bioconductor is a project to provide tools for analyzing high-throughput genomic data including RNA-seq, ChIP-seq and arrays. 
+
+```{r}
+library(DESeq2)
+```
+
+We will use the DESeqDataSetFromMatrix() function to build the required DESeqDataSet object and call it dds, short for our DESeqDataSet. If you get a warning about “some variables in design formula are characters, converting to factors” don’t worry about it. Take a look at the dds object once you create it.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+
+
+Run DESeq2... 
+```{r}
+dds <- DESeq(dds)
+```
+
+Get the results;
+
+Since we’ve got a fairly simple design (single factor, two groups, treated versus control), we can get results out of the object simply by calling the results() function on the DESeqDataSet that has been run through the pipeline. The help page for ?results and the vignette both have extensive documentation about how to pull out the results for more complicated models (multi-factor experiments, specific contrasts, interaction terms, time courses, etc.).
+```{r}
+res <- results(dds)
+res
+```
+
+
+
+
+## 6. Data Visualization
+
+This figure will combine both Fold Change and the p-value into one overview figure indicating the porportion of genes with large scale significant differences in their expression.
+
+```{r}
+# plot(res$log2FoldChange, log(res$padj))
+# see the y axis is neg value
+# so 
+# Dull all-black plot
+plot(res$log2FoldChange, -log(res$padj))
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.05), col="gray", lty=2)
+```
+
+```{r}
+# add some color
+mycols <- rep("gray", nrow(res))
+# make points with +2 -2 fold change blue
+mycols [abs(res$log2FoldChange) > 2 ] <- "blue"
+
+# make points below p-value cutoff gray
+mycols [ (res$padj > 0.05) ] <- "gray"
+
+plot(res$log2FoldChange, -log(res$padj), col=mycols)
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.05), col="gray", lty=2)
+```
+
+
+Save our results for next day...
+```{r}
+write.csv(res, file="expression_results.csv")
+```
+
+
+
