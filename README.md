@@ -1,6 +1,7 @@
 # Bioinformatics Labotorary Fall 2019
 
 Welcome to my course portfolio from [BIMM 143 at UC San Diego](https://bioboot.github.io/bimm143_F19/)!
+
 Feel free to check out the links below to see my work (some links will direct you to the corresonding lecture on the course website). 
 
 ### Course Content
