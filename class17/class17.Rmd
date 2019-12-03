@@ -22,12 +22,12 @@ library(igraph)
 
 ```{r}
 # Test the connection to Cytoscape.
-cytoscapePing()
+# cytoscapePing()
 ```
 
 ```{r}
 # Check the version
-cytoscapeVersionInfo()
+# cytoscapeVersionInfo()
 ```
 
 
@@ -131,9 +131,7 @@ To find out more about igraph network plot options see http://igraph.org/r/doc/p
 
 
 To send this network to Cytoscape we can use the command:
-```{r}
 
-```
 
 
 network analysis is useful

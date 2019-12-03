@@ -1,5 +1,7 @@
 ---
-title: "Untitled"
+title: "Class 18: Cancer Genomics"
+author: Belinda Xue
+date: 11.26.19
 output: github_document
 ---
 
