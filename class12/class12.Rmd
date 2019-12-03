@@ -65,7 +65,7 @@ mktrj(modes,mode=7, file="nma_7.pdb")
 ```
 
 
-
+1
 
 
 

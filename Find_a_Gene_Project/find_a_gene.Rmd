@@ -1,0 +1,41 @@
+---
+title: "Find a Gene Project"
+author: "Belinda Xue"
+date: "11/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+par(mar = c(15, 15, 15, 15))
+```
+
+```{r}
+seq1 <- seqidentity(read.fasta("MSA_FASTA"), normalize=TRUE, similarity=FALSE, ncore=1, nseg.scale=1)
+```
+
+```{r}
+heatmap(seq1, symm=TRUE, margins= c(10,10))
+```
+
+```{r}
+con1 <- consensus(read.fasta("MSA_FASTA"))
+blast.pdb(con1$seq)
+```
+
+```{r}
+pdb.annotate("5Z4U_B")
+pdb.annotate("6U0H_B")
+pdb.annotate("5W3J_B")
+```
+
+
+
+
