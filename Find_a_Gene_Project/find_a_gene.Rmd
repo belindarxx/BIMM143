@@ -22,6 +22,11 @@ seq1 <- seqidentity(read.fasta("MSA_FASTA"), normalize=TRUE, similarity=FALSE, n
 ```
 
 ```{r}
+heatmap(seq1)
+```
+
+
+```{r}
 heatmap(seq1, symm=TRUE, margins= c(10,10))
 ```
 
@@ -37,5 +42,8 @@ pdb.annotate("5W3J_B")
 ```
 
 
+```{r}
+blast
+```
 
 

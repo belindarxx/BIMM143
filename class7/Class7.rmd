@@ -317,6 +317,9 @@ ggplot(mpg, aes(displ, hwy, colour = class)) +
 
 
 
+```{r}
+library(DESeq)
+```
 
 
 
