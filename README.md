@@ -14,20 +14,20 @@ Class 8: [Introduction to machine learning for Bioinformatics 1](https://github.
 
 Class 9: [Unsupervised learning mini-project](https://github.com/belindarxx/BIMM143/blob/master/class9/Class9.md)
 
-Class 10: Hands-on with Git
+Class 10: [Hands-on with Git](https://bioboot.github.io/bimm143_F19/lectures/#10)
 
 Class 11: [Structural Bioinformatics](https://github.com/belindarxx/BIMM143/blob/master/class11/class11.md)
 
 Class 12: [Bioinformatics in drug discovery and design](https://github.com/belindarxx/BIMM143/blob/master/class12/class12.md)
 
-Class 13: Genome informatics and high throughput sequencing
+Class 13: [Genome informatics and high throughput sequencing](https://bioboot.github.io/bimm143_F19/lectures/#13)
 
 Class 14: [Transcriptomics and the analysis of RNA-Seq data](https://github.com/belindarxx/BIMM143/blob/master/class14/class14.md)
 
 Class 15: [Genome annotation and the interpretation of gene lists](https://github.com/belindarxx/BIMM143/blob/master/class15/class15.md)
 
-Class 16: Essential UNIX for bioinformatics
+Class 16: [Essential UNIX for bioinformatics](https://bioboot.github.io/bimm143_F19/lectures/#16)
 
-Class 17: [Biological network analysis]()
+Class 17: [Biological network analysis](https://bioboot.github.io/bimm143_F19/lectures/#17)
 
-Class 18: [Cancer genomics]
+Class 18: [Cancer genomics](https://github.com/belindarxx/BIMM143/blob/master/class18/class18.md)
